@@ -84,7 +84,7 @@ const MemberSchema = new Schema ({
         default:0,
     },
 
-       memberWarnigs: {
+       memberWarnings: {
         type:Number,
         default:0,
     },
