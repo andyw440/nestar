@@ -4,17 +4,16 @@ import { InternalServerErrorException, UsePipes, ValidationPipe } from '@nestjs/
 import { LoginInput, MemberInput } from '../../libs/dto/member/member.input';
 import { Member } from '../../libs/dto/member/member';
 
-
 @Resolver()
 export class MemberResolver {
-    constructor(private readonly memberService: MemberService){}
-    
-    @Mutation(() => Member)
-    @UsePipes(ValidationPipe)
-    public async signup(@Args("input") input:MemberInput): Promise<Member> { 
-      try{
-        console.log("Mutation: signup");
-        console.log("input:", input);
+  constructor(private readonly memberService: MemberService){}
+  
+  @Mutation(() => Member) // Member - manashu api qaytaradigan data turi - ObjectType()
+  @UsePipes(ValidationPipe)
+  public async signup(@Args("input") input:MemberInput): Promise<Member> { 
+    try{
+      console.log("Mutation: signup");
+      // console.log("input:", input);
         return this.memberService.signup(input) 
       } catch(err){
         console.log("Error, signup:", err);

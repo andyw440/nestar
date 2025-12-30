@@ -3,7 +3,7 @@ import type { ObjectId } from "mongoose";
 import { MemberAuthType, MemberStatus, MemberType } from "../../enums/member.enum";
 
 
-@ObjectType()
+@ObjectType() // frontendga ketadigan data ning graphql schemasi
 export class Member {
     @Field(() => String)
     _id: ObjectId;
@@ -23,7 +23,7 @@ export class Member {
      @Field(() => String)
     memberNick: string;
 
-    
+     @Field(() => String)
     memberPassword?: string;
 
     @Field(() => String, { nullable: true })
