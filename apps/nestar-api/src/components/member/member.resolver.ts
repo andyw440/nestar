@@ -10,27 +10,16 @@ export class MemberResolver {
   
   @Mutation(() => Member) // Member - manashu api qaytaradigan data turi - ObjectType()
   public async signup(@Args("input") input:MemberInput): Promise<Member> { 
-    try{
       console.log("Mutation: signup");
-      // console.log("input:", input);
         return this.memberService.signup(input) 
-      } catch(err){
-        console.log("Error, signup:", err);
-        throw new InternalServerErrorException(err)
-        
-      } 
+      
     }
 
       @Mutation(() => Member)
     public async login(@Args("input") input: LoginInput): Promise<Member> {
-        try{
         console.log("Mutation: login");        
         return this.memberService.login(input) 
-      } catch(err){
-        console.log("Error, login:", err);
-        throw new InternalServerErrorException(err)
-        
-      } 
+      
     }
 
       @Mutation(() => String)
