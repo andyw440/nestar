@@ -26,7 +26,7 @@ export class MemberService {
         const {memberNick, memberPassword} = input;
         const response:Member  = await this.memberModel 
                             .findOne({ memberNick: memberNick })
-                            .select({memberPassword:1})
+                            .select("+memberPassword")
                             .exec()
         if(!response || response.memberStatus === MemberStatus.DELETE){
             throw new InternalServerErrorException(Message.NO_MEMBER_NICK);
