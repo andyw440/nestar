@@ -8,11 +8,17 @@ import { Message } from '../../libs/enums/common.enum';
 import { AuthService } from '../auth/auth.service';
 import { MemberUpdate } from '../../libs/dto/member/member.update';
 import { T } from '../../libs/types/common';
+import { ViewService } from '../view/view.service';
+import { ViewInput } from '../../libs/dto/view/view.input';
+import { ViewGroup } from '../../libs/enums/view.enum';
 
 @Injectable() // bu decorator ishlatilgan barcha classlar DI konteynerga jamlab oladi
 export class MemberService {
-    constructor(@InjectModel("Member") private readonly memberModel:Model<Member>,
-     private authService:AuthService) {}
+    constructor(
+        @InjectModel("Member") private readonly memberModel:Model<Member>,
+     private authService:AuthService,
+     private viewService:ViewService,
+    ) {}
      public async signup(input: MemberInput):Promise<Member>{
         // TODO: Hash password
         input.memberPassword = await this.authService.hashPassword(input.memberPassword)
@@ -61,16 +67,25 @@ export class MemberService {
         return result
     }
 
-     public async getMember(targetId:string): Promise<Member> {
+     public async getMember(memberId:ObjectId,targetId:ObjectId): Promise<Member> {
         const search:T = {
             _id:targetId,
             memberStatus:{
                 $in: [MemberStatus.ACTIVE, MemberStatus.BLOCK]
             },
         };
-        const targetMember = await this.memberModel.findOne(search).exec()
+        const targetMember = await this.memberModel.findOne(search).lean().exec()
         if(!targetMember) throw new InternalServerErrorException(Message.NO_DATA_FOUND)
-            
+
+        if(memberId){
+            const viewInput:ViewInput = {memberId:memberId, viewRefId:targetId, viewGroup:ViewGroup.MEMBER}
+            const newView = await this.viewService.recordView(viewInput)
+          if(newView){
+            await this.memberModel.findOneAndUpdate(search, {$inc:{memberViews:1}}, { new: true })
+            targetMember.memberViews++
+          }
+        }
+
         return targetMember
     }
 
