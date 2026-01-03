@@ -9,7 +9,8 @@ import { ComponentsModule } from './components/components.module';
 import { DatabaseModule } from './database/database.module';
 import { T } from './libs/types/common';
 @Module({
-  imports: [ConfigModule.forRoot(), GraphQLModule.forRoot({
+  imports: [ConfigModule.forRoot(),
+     GraphQLModule.forRoot({
     driver:ApolloDriver,
     playground:true,
     uploads:false,
