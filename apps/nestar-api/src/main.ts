@@ -8,8 +8,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule); // express + nest
   app.useGlobalPipes(new ValidationPipe())
   app.useGlobalInterceptors(new LoggingInterceptor())
-  app.enableCors({ origin:true , credentials:true})
-  app.use(graphqlUploadExpress( {maxFileSize:15000000, maxFiles:10} ))
+  app.enableCors({ origin:true , credentials:true}) // cross origin resource sharing
+  app.use(graphqlUploadExpress( {maxFileSize:15000000, maxFiles:10} )) // upload qilingan fayli handle qiladi 
   app.use("/uploads", express.static('./upload'))
 
   await app.listen(process.env.PORT_API ?? 3000);

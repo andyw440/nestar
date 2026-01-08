@@ -4,7 +4,7 @@ import { PropertyLocation, PropertyType } from "../../enums/property.enum";
 import { ObjectId } from "mongoose";
 
 
-@InputType()
+@InputType() // frontenddan keladigan malumot
 export class PropertyInput {
    @IsNotEmpty()
    @Field(() => PropertyType)
@@ -62,7 +62,7 @@ export class PropertyInput {
    @Field(() => Boolean, {nullable:true})
    propertyRent?: boolean;
 
-   memberId?:ObjectId
+   memberId?:ObjectId;
    
    @IsOptional()
    @Field(() => Date, { nullable: true})
