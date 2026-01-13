@@ -36,7 +36,7 @@ export class LoggingInterceptor implements NestInterceptor {
 
 }
     private stringify(context: ExecutionContext):string {
-        return JSON.stringify(context).slice(0,75);
+        return JSON.stringify(context).slice(0,75)
     
 }
 }
