@@ -11,6 +11,7 @@ import { StatisticModifier, T } from '../../libs/types/common';
 import { ViewService } from '../view/view.service';
 import { ViewInput } from '../../libs/dto/view/view.input';
 import { ViewGroup } from '../../libs/enums/view.enum';
+import { shapeIntoMongoObjectId } from '../../libs/config';
 
 @Injectable() // bu decorator ishlatilgan barcha classlar DI konteynerga jamlab oladi
 export class MemberService {
