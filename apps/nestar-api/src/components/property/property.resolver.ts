@@ -17,6 +17,7 @@ import { PropertyUpdate } from '../../libs/dto/property/property.update';
 @Resolver()
 export class PropertyResolver {
     constructor(private readonly propertyService:PropertyService){}
+
     @Roles(MemberType.AGENT)
     @UseGuards(RolesGuard)
     @Mutation(() => Property)
@@ -95,7 +96,6 @@ export class PropertyResolver {
 
     @Roles(MemberType.ADMIN)
     @UseGuards(RolesGuard)
-    @Mutation((returns) => Property)
     @Mutation((returns) => Property)
     public async removePropertyByAdmin(@Args('propertyId') input:string): Promise<Property> {
         console.log('Mutation: removePropertyByAdmin');

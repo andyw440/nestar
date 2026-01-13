@@ -22,7 +22,7 @@ export class Member {
 
      @Field(() => String)
     memberNick: string;
-
+    
     memberPassword?: string;
 
     @Field(() => String, { nullable: true })
@@ -92,7 +92,7 @@ export class TotalCounter {
 
 @ObjectType()
 export class Members {
-    @Field(() => [Member])
+    @Field(() => [Member], { nullable: true })
     list: Member[];
     @Field(() => [TotalCounter], { nullable : true})
     metaCounter:TotalCounter[];

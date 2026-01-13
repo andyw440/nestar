@@ -13,7 +13,7 @@ import { T } from './libs/types/common';
      GraphQLModule.forRoot({
     driver:ApolloDriver,
     playground:true,
-    uploads:true,
+    uploads:false,
     autoSchemaFile:true,
     formatError:(error:T) => {
         const graphQLFormattedError = {

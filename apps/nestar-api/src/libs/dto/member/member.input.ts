@@ -22,8 +22,8 @@ export class MemberInput {
     memberPhone:string;
 
     @IsOptional()
-    @Field(() => MemberType, { nullable:true })
-    memberType?:MemberType;
+    @Field(() => MemberType, { nullable:true }) // graphql
+    memberType?:MemberType; // typescript
 
     @IsOptional()
     @Field(() => MemberAuthType, { nullable:true })

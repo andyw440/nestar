@@ -27,7 +27,7 @@ export class PropertyService {
                 {_id:result.memberId, targetKey:"memberProperties", modifier:1})
            return result 
         } catch(err) {
-            console.log('Error, Service.model:', err.message);//////
+            console.log('Error, Service.model:', err.message);
             throw new BadRequestException(Message.CREATE_FAILED)
             
         }
@@ -104,7 +104,14 @@ export class PropertyService {
                         {$skip: (input.page - 1) * input.limit },
                         { $limit: input.limit },
                         // meLiked
-                        lookupMember,
+                        {
+                            $lookup: {
+                                from:'members',
+                                localField:'memberId',
+                                foreignField:'_id',
+                                as:'memberData'
+                            }
+                        },
                         { $unwind: '$memberData'},
                     ],
                     metaCounter: [{ $count: 'total'}],
@@ -150,10 +157,9 @@ export class PropertyService {
         }
     }
 
-        public async getAgentProperties(memberId: ObjectId,input: AgentPropertiesInquiry
-    ): Promise<Properties> {
-    const { propertyStatus } = input.search;
-    if (propertyStatus === PropertyStatus.DELETE)
+    public async getAgentProperties(memberId: ObjectId,input: AgentPropertiesInquiry): Promise<Properties> {
+        const { propertyStatus } = input.search;
+        if (propertyStatus === PropertyStatus.DELETE)
         throw new BadRequestException(Message.NOT_ALLOWED_REQUEST);
 
         const match: T = {
@@ -237,14 +243,9 @@ export class PropertyService {
             if (propertyStatus === PropertyStatus.SOLD) soldAt = moment().toDate();
             else if (propertyStatus === PropertyStatus.DELETE) deletedAt = moment().toDate();
 
-            const result = await this.propertyModel
-                .findOneAndUpdate(search, input, {
-                new: true,
-                })
-                .exec();
+            const result = await this.propertyModel.findOneAndUpdate(search, input, { new: true }).exec();
 
-            if (!result)
-                throw new InternalServerErrorException(Message.UPDATE_FAILED);
+            if (!result)  throw new InternalServerErrorException(Message.UPDATE_FAILED);
 
             if (soldAt || deletedAt) {
                 await this.memberService.memberStatsEditor({
@@ -259,7 +260,7 @@ export class PropertyService {
 
 
         public async removePropertyByAdmin(propertyId:ObjectId): Promise<Property> {
-            const search:T = {_id: propertyId, propertyStatus: PropertyStatus.DELETE };
+            const search:T = {_id: propertyId, propertySstatu: PropertyStatus.DELETE };
             const result = await this.propertyModel.findOneAndDelete(search).exec()
             if(!result) throw new InternalServerErrorException(Message.REMOVE_FAILED)
             

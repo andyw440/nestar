@@ -58,9 +58,9 @@ export class MemberService {
 
      public async updateMember(memberId:ObjectId, input:MemberUpdate):Promise<Member>{
         const result: Member = await this.memberModel.findOneAndUpdate(
-            {_id:memberId, memberStatus:MemberStatus.ACTIVE},
-            input,
-            {new:true}
+            {_id:memberId, memberStatus:MemberStatus.ACTIVE}, // FILTER
+            input, // UPDATE
+            {new:true} //OPTION
         ).exec()
         if(!result) throw new InternalServerErrorException(Message.UPLOAD_FAILED)
         result.accessToken = await this.authService.createToken(result)
@@ -140,6 +140,9 @@ export class MemberService {
     }
 
     public async updateMemberByAdmin(input: MemberUpdate): Promise<Member> {
+        if(input.memberPassword){
+            input.memberPassword = await this.authService.hashPassword(input.memberPassword)
+        }
         const result:Member = await this.memberModel.findOneAndUpdate(
             {_id:input._id},
             input,
