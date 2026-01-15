@@ -43,6 +43,8 @@ export class BoardArticleService {
             articleStatus:BoardArticleStatus.ACTIVE,
         }
         const targetBoardArticle:BoardArticle = await this.boardArticleModel.findOne(search).lean().exec()
+        console.log("targetBoardArticle:", targetBoardArticle);
+        
         if(!targetBoardArticle) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
         if(memberId){
@@ -53,6 +55,7 @@ export class BoardArticleService {
                 targetBoardArticle.articleViews++
             }
         }
+        targetBoardArticle.memberData = await this.memberService.getMember(null,targetBoardArticle.memberId)
         return targetBoardArticle;
     }
 
@@ -61,10 +64,8 @@ export class BoardArticleService {
     const { _id, articleStatus } = input;
 
     const result = await this.boardArticleModel
-        .findOneAndUpdate({ _id: _id, memberId: memberId, articleStatus: BoardArticleStatus.ACTIVE }, input, {
-            new: true,
-        })
-        .exec();
+        .findOneAndUpdate({ _id: _id, memberId: memberId, articleStatus: BoardArticleStatus.ACTIVE }, input, 
+            { new: true } ).exec();
 
     if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
 
@@ -114,7 +115,7 @@ export class BoardArticleService {
 
     return result[0];
 }
-
+    // ADMIN
     public async getAllBoardArticlesByAdmin(input: AllBoardArticlesInquiry): Promise<BoardArticles> {
     const { articleStatus, articleCategory } = input.search;
     const match: T = {};
@@ -169,8 +170,9 @@ export class BoardArticleService {
 }
 
     public async removeBoardArticleByAdmin(articleId:ObjectId):Promise<BoardArticle> {
-        const search:T = {_id: articleId, articleStatus:BoardArticleStatus.ACTIVE }
+        const search:T = {_id: articleId, articleStatus:BoardArticleStatus.DELETE}
         const result = await this.boardArticleModel.findOneAndDelete(search).exec();
+        
         if(!result) throw new InternalServerErrorException(Message.REMOVE_FAILED);
 
         return result;
