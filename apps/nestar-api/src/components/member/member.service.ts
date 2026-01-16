@@ -14,14 +14,16 @@ import { ViewGroup } from '../../libs/enums/view.enum';
 import { LikeInput } from '../../libs/dto/like/like.input';
 import { LikeGroup } from '../../libs/enums/like.enum';
 import { LikeService } from '../like/like.service';
+import { Follower, Following, MeFollowed } from '../../libs/dto/follow/follow';
 
 @Injectable() // bu decorator ishlatilgan barcha classlar DI konteynerga jamlab oladi
 export class MemberService {
     constructor(
         @InjectModel("Member") private readonly memberModel:Model<Member>,
-     private authService:AuthService,
-     private viewService:ViewService,
-     private likeService:LikeService,
+        @InjectModel('Follow') private readonly followModel:Model<Follower | Following>,
+        private authService:AuthService,
+        private viewService:ViewService,
+        private likeService:LikeService,
     ) {}
      public async signup(input: MemberInput):Promise<Member>{
         // TODO: Hash password
@@ -92,6 +94,9 @@ export class MemberService {
           // me liked?
           const likeInput = {memberId:memberId, likeRefId:targetId, likeGroup:LikeGroup.MEMBER}
           targetMember.meLiked = await this.likeService.checkLikeExistance(likeInput)
+
+          // me Followed?
+          targetMember.meFollowed = await this.checkSubscripton(memberId,targetId)
         }
 
         return targetMember
@@ -178,6 +183,11 @@ export class MemberService {
         .exec()
         if(!result) throw new InternalServerErrorException(Message.UPDATE_FAILED)
         return result
+    }
+
+    public async checkSubscripton(followerId:ObjectId, followingId:ObjectId):Promise<MeFollowed[]> {
+       const result = await this.followModel.findOne({ followingId:followingId, followerId:followerId}).exec()
+        return result ? [{followerId:followerId, followingId:followingId, myFollowing:true}] : []
     }
 
     public async memberStatsEditor(input:StatisticModifier): Promise<Member> {
