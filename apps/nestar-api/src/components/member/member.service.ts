@@ -11,7 +11,6 @@ import { StatisticModifier, T } from '../../libs/types/common';
 import { ViewService } from '../view/view.service';
 import { ViewInput } from '../../libs/dto/view/view.input';
 import { ViewGroup } from '../../libs/enums/view.enum';
-import { shapeIntoMongoObjectId } from '../../libs/config';
 import { LikeInput } from '../../libs/dto/like/like.input';
 import { LikeGroup } from '../../libs/enums/like.enum';
 import { LikeService } from '../like/like.service';
@@ -89,6 +88,10 @@ export class MemberService {
             await this.memberModel.findOneAndUpdate(search, {$inc:{memberViews:1}}, { new: true })
             targetMember.memberViews++
           }
+
+          // me liked?
+          const likeInput = {memberId:memberId, likeRefId:targetId, likeGroup:LikeGroup.MEMBER}
+          targetMember.meLiked = await this.likeService.checkLikeExistance(likeInput)
         }
 
         return targetMember
