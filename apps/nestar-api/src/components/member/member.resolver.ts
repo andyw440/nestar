@@ -78,6 +78,19 @@ export class MemberResolver {
       return await this.memberService.getAgents(memberId, input)
       
     }
+    // like grahqQL APIs
+
+    @UseGuards(AuthGuard)
+    @Mutation(() => Member)
+    public async likeTargetMember(
+      @Args("memberId") input:string, 
+      @AuthMember("_id") memberId:ObjectId,
+    ): Promise<Member> {
+      console.log('Mutation: likeTargetMember');
+      const likeRefId = shapeIntoMongoObjectId(input)
+      return await this.memberService.likeTargetMember(memberId,likeRefId);
+      
+    }
 
     /** ADMIN **/
 
