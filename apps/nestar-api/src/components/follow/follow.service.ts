@@ -14,7 +14,7 @@ export class FollowService {
     private readonly memberService:MemberService,
     ){}
 
-    public async subscribe(followerId: ObjectId, followingId: ObjectId): Promise<Follower> {
+    public async subscribe (followerId: ObjectId, followingId: ObjectId): Promise<Follower> {
   if (followerId.toString() === followingId.toString()) {
     throw new InternalServerErrorException(Message.SELF_SUBSCRIPTION_DENIED);
   }
@@ -24,8 +24,16 @@ export class FollowService {
 
   const result = await this.registerSubscripton(followerId, followingId);
 
-  await this.memberService.memberStatsEditor({ _id: followerId, targetKey: 'memberFollowings', modifier: 1 });
-  await this.memberService.memberStatsEditor({ _id: followingId, targetKey: 'memberFollowers', modifier: 1 });
+  
+  try {
+        await Promise.all([
+            this.memberService.memberStatsEditor({ _id: followerId, targetKey: 'memberFollowings', modifier: 1 }),
+            this.memberService.memberStatsEditor({ _id: followingId, targetKey: 'memberFollowers', modifier: 1 })
+        ]);
+    } catch (err) {
+        console.error('Error updating stats:', err);
+        throw new InternalServerErrorException('Failed to updating memberStats')
+    }
 
   return result;
 }
@@ -62,7 +70,7 @@ public async unsubscribe(followerId: ObjectId, followingId: ObjectId): Promise<F
 public async getMemberFollowings(memberId: ObjectId, input: FollowInquiry): Promise<Followings> {
   const { page, limit, search } = input;
   if (!search?.followerId) throw new InternalServerErrorException(Message.BAD_REQUEST);
-  const match: T = { followerId: search?.followerId };
+  const match: T = { followerId: search?.followerId }; // followerIdni egasi kimlarga follow qilgani find qilinadi
   console.log('match:', match);
 
   const result = await this.followModel
@@ -94,7 +102,7 @@ public async getMemberFollowers(memberId: ObjectId, input: FollowInquiry): Promi
   const { page, limit, search } = input;
   if (!search?.followingId) throw new InternalServerErrorException(Message.BAD_REQUEST);
 
-  const match: T = { followingId: search?.followingId };
+  const match: T = { followingId: search?.followingId }; // followingId egasiga follow bo'lganlar find qilinadi
   console.log('match:', match);
 
   const result = await this.followModel

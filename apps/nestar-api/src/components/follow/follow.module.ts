@@ -11,6 +11,7 @@ import { MemberModule } from '../member/member.module';
         MongooseModule.forFeature([{ name : "Follow", schema : FollowSchema}]),
         AuthModule,
         MemberModule,
+        
     ],
     providers:[FollowResolver,FollowService],
     exports:[FollowService]
