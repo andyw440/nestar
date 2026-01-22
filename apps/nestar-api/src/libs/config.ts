@@ -36,7 +36,7 @@ export const lookupAuthMemberLiked = (memberId:T, targetRefId:string = "$_id") =
 		$lookup:{
 			from : "likes",
 			let: {
-				localLikeRedId: targetRefId,
+				localLikeRefId: targetRefId,
 				localMemberId:memberId,
 				localMyFavorite:true
 			},
@@ -44,7 +44,10 @@ export const lookupAuthMemberLiked = (memberId:T, targetRefId:string = "$_id") =
 				{
 					$match:{
 						$expr: {
-							$and:[{ $eq:["$likeRefId", "$$localLikeRedId"]}, { $eq: ['$memberId', '$$localMemberId']}],
+							$and:[
+									{ $eq:["$likeRefId", "$$localLikeRefId"]},
+							 		{ $eq: ['$memberId', '$$localMemberId']}
+								 ],
 						},
 					},
 				},
@@ -89,6 +92,7 @@ export const lookupAuthMemberFollowed = (input: LookupAuthMemberFollowed) => {
             },
           },
         },
+		
         {
           $project: {
             _id: 0,

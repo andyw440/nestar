@@ -49,7 +49,14 @@ export class ViewService {
                         list:[
                             { $skip: (page-1) * limit},
                             {$limit: limit },
-                            lookupVisit,
+                            {
+                                $lookup:{
+                                        from: "members",
+                                        localField:'visitedProperty.memberId',
+                                        foreignField:'_id',
+                                        as:'visitedProperty.memberData'
+                                    }
+                            },
                             {$unwind: '$visitedProperty.memberData'}
                         ],
                         metaCounter: [{ $count: 'total' }]

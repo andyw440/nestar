@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { LoggingInterceptor } from './libs/interceptor/Logging.interceptor';
 import {graphqlUploadExpress} from "graphql-upload"
 import * as express from "express"
+import { WsAdapter } from '@nestjs/platform-ws';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule); // express + nest
   app.useGlobalPipes(new ValidationPipe())
@@ -11,6 +12,7 @@ async function bootstrap() {
   app.enableCors({ origin:true , credentials:true}) // cross origin resource sharing
   app.use(graphqlUploadExpress( {maxFileSize:15000000, maxFiles:10} )) // upload qilingan fayli handle qiladi 
   app.use("/uploads", express.static('./upload'))
+  app.useWebSocketAdapter(new WsAdapter(app))
 
   await app.listen(process.env.PORT_API ?? 3000);
 }

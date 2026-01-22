@@ -63,7 +63,14 @@ export class LikeService {
                     list:[
                         { $skip: (page-1) * limit},
                         {$limit: limit },
-                        lookupFavorite,
+                        {
+                            $lookup:{
+                                from: "members",
+                                localField:'favoriteProperty.memberId',
+                                foreignField:'_id',
+                                as:'favoriteProperty.memberData'
+                            },
+                        },
                         {$unwind: '$favoriteProperty.memberData'}
                     ],
                     metaCounter: [{$count: 'total'}]
